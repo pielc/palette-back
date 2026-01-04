@@ -8,6 +8,9 @@
   "main": "index.js",
   "scripts": {},
   "dependencies": {
+    "@supabase/storage-js": "^2.89.0",
+    "@supabase/supabase-js": "^2.89.0",
+    "dotenv": "^17.2.3",
     "ml-kmeans": "^7.0.0",
     "sharp": "^0.34.5"
   }
