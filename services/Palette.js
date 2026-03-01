@@ -41,7 +41,13 @@ function distance(a, b) {
   return Math.sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-export async function extractPalette(imageBuffer, artId, artDetails, supabase) {
+export async function extractPalette(
+  imageBuffer,
+  artId,
+  artDetails,
+  displayDate,
+  supabase,
+) {
   const image = sharp(imageBuffer);
   // const image = sharp("images/test.png");
   // artId = "test";
@@ -84,7 +90,9 @@ export async function extractPalette(imageBuffer, artId, artDetails, supabase) {
       upsert: true,
     });
 
+  console.log("file error:");
   console.log(fileerror);
+  console.log("file data:");
   console.log(filedata);
 
   const sortedIndex = sortColorIndexes(palette);
@@ -110,10 +118,15 @@ export async function extractPalette(imageBuffer, artId, artDetails, supabase) {
     date: artDetails.date,
   };
 
-  const { error: dberror } = await supabase
-    .from("ImageColors")
-    .insert({ image_id: artId, palette: dbPalette, art_info: dbArtDetails });
+  const { error: dberror } = await supabase.from("ImageColors").insert({
+    image_id: artId,
+    palette: dbPalette,
+    art_info: dbArtDetails,
+    display_month: displayDate.month,
+    display_day: displayDate.day,
+  });
 
+  console.log("db error:");
   console.log(dberror);
 }
 

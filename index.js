@@ -10,22 +10,44 @@ const supabase = createClient(
 
 const artIds = await getArts();
 
-const artId = artIds[0];
+let iteration = 0;
+for (const artId of artIds) {
+  if (iteration++ > 31) break;
+  console.log(iteration);
 
-const artDetails = await getArtDetails(artId);
+  const artDetails = await getArtDetails(artId);
+  if (artDetails.colorfulness < 15) continue;
 
-console.log(artDetails);
+  console.log(artDetails);
 
-const imageBuffer = await getImageBuffer(artDetails.imageUrl);
+  const imageBuffer = await getImageBuffer(artDetails.imageUrl);
 
-const { data: filedata, error: fileerror } = await supabase.storage
-  .from("labels")
-  .upload(`${artId}.jpg`, imageBuffer, {
-    contentType: "image/jpeg",
-    upsert: true,
-  });
+  const { data: filedata, error: fileerror } = await supabase.storage
+    .from("labels")
+    .upload(`${artId}.jpg`, imageBuffer, {
+      contentType: "image/jpeg",
+      upsert: true,
+    });
 
-console.log(fileerror);
-console.log(filedata);
+  console.log("file error:");
+  console.log(fileerror);
+  console.log("file data:");
+  console.log(filedata);
 
-await extractPalette(imageBuffer, artId, artDetails, supabase);
+  await extractPalette(
+    imageBuffer,
+    artId,
+    artDetails,
+    { month: 3, day: iteration },
+    supabase,
+  );
+}
+
+// TODO: remove, test only
+
+// const artDetails = {
+//   title: "Cliff Walk at Pourville",
+//   artist: "Claude Monet (French, 1840–1926)",
+//   date: "1882",
+// };
+// await extractPalette(null, null, artDetails, supabase);
